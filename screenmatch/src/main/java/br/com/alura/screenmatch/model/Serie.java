@@ -20,7 +20,7 @@ public class Serie {
            * OptionalDouble.of() - encapsula o valor dentro de um OptionalDouble e caso esteja vazio, usa 0 como valor padrão
            */
           this.avaliacao= OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
-          this.genero=Categoria.fromString(dadosSerie.genero());
+          this.genero=Categoria.fromString(dadosSerie.genero().substring(0, dadosSerie.genero().indexOf(",")));
      }
 
 
