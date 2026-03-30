@@ -1,5 +1,7 @@
 package br.com.alura.screenmatch.model;
 
+import br.com.alura.screenmatch.service.ConsultaChatGpt;
+
 import java.util.OptionalDouble;
 
 public class Serie {
@@ -21,6 +23,7 @@ public class Serie {
            */
           this.avaliacao= OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
           this.genero=Categoria.fromString(dadosSerie.genero());
+          this.sinopse= ConsultaChatGpt.obterTraducao(dadosSerie.sinopse());
      }
 
 
