@@ -1,18 +1,35 @@
 package br.com.alura.screenmatch.model;
 
 import br.com.alura.screenmatch.service.traducao.ConsultaMyMemory;
+import jakarta.persistence.*;
 
+import javax.naming.Name;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
 
+@Entity
+@Table(name = "Series")
 public class Serie {
 
+     @Id
+     @GeneratedValue(strategy = GenerationType.IDENTITY)
+     private int id;
+
+     @Column(unique = true)
      private String titulo;
+
+     @Enumerated(EnumType.STRING)
+     private Categoria genero;
+
      private Integer totalTemporadas;
      private Double avaliacao;
-     private Categoria genero;
      private String atores;
      private String sinopse;
      private String poster;
+
+     @Transient/*Esse atributo sera ignorado*/
+     private List<Episodio> episodios = new ArrayList<>();
 
      public Serie(DadosSerie dadosSerie){
           this.titulo=dadosSerie.titulo();
@@ -85,7 +102,23 @@ public class Serie {
           this.poster = poster;
      }
 
-     @Override
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        this.episodios = episodios;
+    }
+
+    @Override
      public String toString() {
           return  "genero=" + genero +
                   ", titulo='" + titulo + '\'' +
