@@ -23,9 +23,15 @@ public class Serie {
      private Categoria genero;
 
      private Integer totalTemporadas;
+
      private Double avaliacao;
+
+    @Column(columnDefinition = "TEXT")
      private String atores;
+
+     @Column(columnDefinition = "TEXT")
      private String sinopse;
+
      private String poster;
 
      @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
