@@ -15,7 +15,7 @@ public class Artista {
 
     private String gereroMusical;
 
-    @OneToMany
+    @OneToMany(mappedBy = "artista")
     private List<Musica> musicas;
 
     public Artista() {}
