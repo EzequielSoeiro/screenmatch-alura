@@ -11,6 +11,7 @@ public class Artista {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(unique = true)
     private String nome;
 
     private String gereroMusical;

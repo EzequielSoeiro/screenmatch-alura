@@ -4,18 +4,19 @@ import com.example.screenSoundMusic.model.Artista;
 import com.example.screenSoundMusic.model.Musica;
 import com.example.screenSoundMusic.repository.ArtistaRepository;
 import com.example.screenSoundMusic.repository.MusicaRepository;
-import org.aspectj.apache.bcel.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 public class Principal {
 
-    private static Scanner scanner = new Scanner(System.in);
-    private ArtistaRepository artistaRepository;
-    private MusicaRepository musicaRepository;
+    private final Scanner scanner = new Scanner(System.in);
+    private final ArtistaRepository artistaRepository;
+    private final MusicaRepository musicaRepository;
 
-    public Principal(ArtistaRepository artistaRepository, MusicaRepository musicaRepository) {
+    public Principal(ArtistaRepository artistaRepository, 
+                     MusicaRepository musicaRepository) {
         this.artistaRepository = artistaRepository;
         this.musicaRepository = musicaRepository;
     }
@@ -46,16 +47,13 @@ public class Principal {
                     cadastrarMusica();
                     break;
                 case 3:
-                    System.out.println("Listar músicas...");
-                    // TODO: Implementar listagem de músicas
+                    listarMusicas();
                     break;
                 case 4:
-                    System.out.println("Buscar música por artista...");
-                    // TODO: Implementar busca de música por artista
+                    buscarMusicaPorArtista();
                     break;
                 case 5:
-                    System.out.println("Pesquisar dados sobre um artista...");
-                    // TODO: Implementar pesquisa de dados sobre artista
+                   pesquisarDadosArtista();
                     break;
                 case 0:
                     System.out.println("Saindo... Até logo!");
@@ -68,28 +66,71 @@ public class Principal {
         scanner.close();
     }
 
-    private void cadastrarMusica() {
-        System.out.println("Digite o nome da música:");
-        String nomeMusica = scanner.nextLine();
+    private void pesquisarDadosArtista() {
 
+    }
+
+    private void buscarMusicaPorArtista() {
         System.out.println("Digite o nome do artista:");
         String nomeArtista = scanner.nextLine();
 
-        Optional<Artista> artistaEcontrado = artistaRepository.findByNomeContainingIgnoreCase(nomeArtista);
-        if(artistaEcontrado.isPresent()){
-            System.out.println("Artista não encontrado! Cadastre o artista antes de cadastrar a música.");
-            return;
+        Optional<Artista> artistaEncontrado = artistaRepository.findByNomeIgnoreCase(nomeArtista);
+        if (artistaEncontrado.isPresent()) {
+            List<Musica> musicasDoArtista = musicaRepository.findByArtista(artistaEncontrado.get());
+            if (musicasDoArtista.isEmpty()) {
+                System.out.println("Nenhuma música encontrada para o artista " + nomeArtista);
+            } else {
+                System.out.println("Músicas do artista " + nomeArtista + ":");
+                musicasDoArtista.forEach(musica -> System.out.println("- " + musica.getTitulo()));
+            }
+        } else {
+            System.out.println("Artista não encontrado: " + nomeArtista);
         }
+    }
 
-        String nomeAlbum = null;
-        System.out.println("A musica pertece a um álbum? (S/N)");
-        String resposta = scanner.nextLine();
-        if(resposta.equalsIgnoreCase("S")){
-            System.out.println("Digite o nome do álbum:");
-            nomeAlbum = scanner.nextLine();
+    private void listarMusicas() {
+        List<Musica> musicas = musicaRepository.findAll();
+        if (musicas.isEmpty()) {
+            System.out.println("Nenhuma música cadastrada.");
+        } else {
+            musicas.forEach(musica -> {;
+                System.out.println("\nNome: " + musica.getTitulo());
+                System.out.println("Artista: " + musica.getArtista().getNome());
+                if (musica.getAlbum() != null) {
+                    System.out.println("Álbum: " + musica.getAlbum());
+                }
+                System.out.println("-------------------------");
+            });
         }
+    }
 
-        musicaRepository.save(new Musica(nomeMusica, nomeAlbum, artistaEcontrado.get()));
+    private void cadastrarMusica() {
+        try {
+            System.out.println("Digite o nome da música:");
+            String nomeMusica = scanner.nextLine();
+
+            System.out.println("Digite o nome do artista:");
+            String nomeArtista = scanner.nextLine();
+
+            Optional<Artista> artistaEcontrado = artistaRepository.findByNomeIgnoreCase(nomeArtista);
+            if(artistaEcontrado.isEmpty()){
+                System.out.println("Artista não encontrado! Cadastre o artista antes de cadastrar a música.");
+                return;
+            }
+
+            String nomeAlbum = null;
+            System.out.println("A musica pertece a um álbum? (S/N)");
+            String resposta = scanner.nextLine();
+            if(resposta.equalsIgnoreCase("S")){
+                System.out.println("Digite o nome do álbum:");
+                nomeAlbum = scanner.nextLine();
+            }
+
+            musicaRepository.save(new Musica(nomeMusica, nomeAlbum, artistaEcontrado.get()));
+            System.out.println("Música cadastrada com sucesso!");
+        }catch (Exception e) {
+            System.out.println("Erro ao cadastrar música: " + e.getMessage());
+        }
     }
 
     private void cadastrarArtista() {
