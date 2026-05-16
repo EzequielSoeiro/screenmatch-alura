@@ -13,14 +13,18 @@ public class Musica {
 
     private String album;
 
+    @Enumerated(EnumType.STRING)
+    private GeneroMusical generoMusical;
+
     @ManyToOne
     private Artista artista;
 
     public Musica() {}
 
-    public Musica(String titulo, String album, Artista artista) {
+    public Musica(String titulo, String album, GeneroMusical generoMusical, Artista artista) {
         this.titulo = titulo;
         this.album = album;
+        this.generoMusical = generoMusical;
         this.artista = artista;
     }
 
@@ -38,6 +42,14 @@ public class Musica {
 
     public void setAlbum(String album) {
         this.album = album;
+    }
+
+    public GeneroMusical getGeneroMusical() {
+        return generoMusical;
+    }
+
+    public void setGeneroMusical(GeneroMusical generoMusical) {
+        this.generoMusical = generoMusical;
     }
 
     public Artista getArtista() {

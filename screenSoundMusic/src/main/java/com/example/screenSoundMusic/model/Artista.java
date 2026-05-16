@@ -14,16 +14,13 @@ public class Artista {
     @Column(unique = true)
     private String nome;
 
-    private String gereroMusical;
-
     @OneToMany(mappedBy = "artista")
     private List<Musica> musicas;
 
     public Artista() {}
 
-    public Artista(String nome, String gereroMusical, List<Musica> musicas) {
+    public Artista(String nome, List<Musica> musicas) {
         this.nome = nome;
-        this.gereroMusical = gereroMusical;
         this.musicas = musicas;
     }
 
@@ -33,14 +30,6 @@ public class Artista {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public String getGereroMusical() {
-        return gereroMusical;
-    }
-
-    public void setGereroMusical(String gereroMusical) {
-        this.gereroMusical = gereroMusical;
     }
 
     public List<Musica> getMusicas() {

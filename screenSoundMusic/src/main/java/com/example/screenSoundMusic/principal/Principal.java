@@ -1,9 +1,11 @@
 package com.example.screenSoundMusic.principal;
 
 import com.example.screenSoundMusic.model.Artista;
+import com.example.screenSoundMusic.model.GeneroMusical;
 import com.example.screenSoundMusic.model.Musica;
 import com.example.screenSoundMusic.repository.ArtistaRepository;
 import com.example.screenSoundMusic.repository.MusicaRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,8 +68,70 @@ public class Principal {
         scanner.close();
     }
 
-    private void pesquisarDadosArtista() {
+    private void cadastrarArtista() {
+        try {
+            System.out.println("Digite o nome do artista:");
+            String nomeArtista = scanner.nextLine();
 
+            artistaRepository.save(new Artista(nomeArtista.toUpperCase(), null));
+            System.out.println("Artista cadastrado com sucesso!");
+        } catch (DataIntegrityViolationException e){
+            System.out.println("Erro: Artista já cadastrado! ");
+        } catch (Exception e) {
+            System.out.println("Erro ao cadastrar artista: " + e.getMessage());
+        }
+
+    }
+
+    private void cadastrarMusica() {
+        try {
+            System.out.println("Digite o nome da música:");
+            String nomeMusica = scanner.nextLine();
+
+            System.out.println("Digite o gênero musical da música (opções: " + java.util.Arrays.toString(GeneroMusical.values()) + "):");
+            String generoMusicalTexto = scanner.nextLine();
+            GeneroMusical generoMusical = GeneroMusical.fromUserInput(generoMusicalTexto);
+            System.out.println("Digite o nome do artista:");
+            String nomeArtista = scanner.nextLine();
+
+            Optional<Artista> artistaEcontrado = artistaRepository.findByNomeIgnoreCase(nomeArtista);
+            if(artistaEcontrado.isEmpty()){
+                System.out.println("Artista não encontrado! Cadastre o artista antes de cadastrar a música.");
+                return;
+            }
+
+            String nomeAlbum = null;
+            System.out.println("A musica pertece a um álbum? (S/N)");
+            String resposta = scanner.nextLine();
+            if(resposta.equalsIgnoreCase("S")){
+                System.out.println("Digite o nome do álbum:");
+                nomeAlbum = scanner.nextLine();
+            }
+
+            musicaRepository.save(new Musica(nomeMusica, nomeAlbum, generoMusical, artistaEcontrado.get()));
+            System.out.println("Música cadastrada com sucesso!");
+        }catch (IllegalArgumentException e) {
+            System.out.println("Gênero musical inválido! Use uma das opções exibidas.");
+        } catch (Exception e) {
+            System.out.println("Erro ao cadastrar música: " + e.getMessage());
+        }
+    }
+
+    private void listarMusicas() {
+        List<Musica> musicas = musicaRepository.findAll();
+        if (musicas.isEmpty()) {
+            System.out.println("Nenhuma música cadastrada.");
+        } else {
+            musicas.forEach(musica -> {
+                System.out.println("\nNome: " + musica.getTitulo());
+                System.out.println("Artista: " + musica.getArtista().getNome());
+                System.out.println("Gênero: " + musica.getGeneroMusical());
+                if (musica.getAlbum() != null) {
+                    System.out.println("Álbum: " + musica.getAlbum());
+                }
+                System.out.println("-------------------------");
+            });
+        }
     }
 
     private void buscarMusicaPorArtista() {
@@ -88,64 +152,12 @@ public class Principal {
         }
     }
 
-    private void listarMusicas() {
-        List<Musica> musicas = musicaRepository.findAll();
-        if (musicas.isEmpty()) {
-            System.out.println("Nenhuma música cadastrada.");
-        } else {
-            musicas.forEach(musica -> {;
-                System.out.println("\nNome: " + musica.getTitulo());
-                System.out.println("Artista: " + musica.getArtista().getNome());
-                if (musica.getAlbum() != null) {
-                    System.out.println("Álbum: " + musica.getAlbum());
-                }
-                System.out.println("-------------------------");
-            });
-        }
-    }
-
-    private void cadastrarMusica() {
-        try {
-            System.out.println("Digite o nome da música:");
-            String nomeMusica = scanner.nextLine();
-
-            System.out.println("Digite o nome do artista:");
-            String nomeArtista = scanner.nextLine();
-
-            Optional<Artista> artistaEcontrado = artistaRepository.findByNomeIgnoreCase(nomeArtista);
-            if(artistaEcontrado.isEmpty()){
-                System.out.println("Artista não encontrado! Cadastre o artista antes de cadastrar a música.");
-                return;
-            }
-
-            String nomeAlbum = null;
-            System.out.println("A musica pertece a um álbum? (S/N)");
-            String resposta = scanner.nextLine();
-            if(resposta.equalsIgnoreCase("S")){
-                System.out.println("Digite o nome do álbum:");
-                nomeAlbum = scanner.nextLine();
-            }
-
-            musicaRepository.save(new Musica(nomeMusica, nomeAlbum, artistaEcontrado.get()));
-            System.out.println("Música cadastrada com sucesso!");
-        }catch (Exception e) {
-            System.out.println("Erro ao cadastrar música: " + e.getMessage());
-        }
-    }
-
-    private void cadastrarArtista() {
-        try {
-        System.out.println("Digite o nome do artista:");
-        String nomeArtista = scanner.nextLine();
-
-        System.out.println("Digite o gênero musical do artista:");
-        String generoMusical = scanner.nextLine();
-
-        artistaRepository.save(new Artista(nomeArtista.toUpperCase(), generoMusical, null));
-        System.out.println("Artista cadastrado com sucesso!");
-        } catch (Exception e) {
-            System.out.println("Erro ao cadastrar artista: " + e.getMessage());
-        }
+    private void pesquisarDadosArtista() {
 
     }
+
+
+
+
+
 }
